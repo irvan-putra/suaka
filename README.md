@@ -2,6 +2,8 @@
 
 An early-stage project exploring independent alternatives to major technology platforms.
 
+**Website:** https://irvan-putra.github.io/suaka/ - concept preview plus the domain automation research and planned customer wizard ([guide](https://irvan-putra.github.io/suaka/guide/)).
+
 ## Concept
 
 The current working names and reference points are:
@@ -15,4 +17,4 @@ The initial business idea is to let people purchase domain names through the Por
 
 ## Status
 
-This repository is a planning placeholder. No products, domain purchases, hosting services, or API integrations are implemented.
+This repository holds the planning README and the static website (in `site/`, deployed to GitHub Pages via Actions). No products, domain purchases, hosting services, or API integrations are implemented.

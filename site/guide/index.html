@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domain automation guide - Suaka</title>
+<meta name="description" content="Research summary: how Suaka can automate domain registration and DNS for customers through the Porkbun API while customers keep ownership. Includes the planned customer wizard.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="../">Suaka</a>
+    <nav>
+      <a href="https://github.com/irvan-putra/suaka">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <span class="badge planned">Research summary - not implemented</span>
+    <h1>Domain automation, with the customer keeping ownership</h1>
+    <p class="lede">Can Suaka register and manage domains for customers without owning them? Yes. This guide summarizes the research against Porkbun's first-party API documentation and lays out the planned customer wizard.</p>
+  </div>
+
+  <section>
+    <h2>Short answer</h2>
+    <p>Porkbun's API registers domains directly (<code>POST /api/json/v3/domain/create/{domain}</code>), paid from prepaid account credit, USDC, or a card hold. First registrations over the API are allowed. Requirements and limits: the account's email and phone must be verified first, each API order is capped at $100, and API spending is capped at $100/month by default (the account holder can raise it). Premium names are website-only.</p>
+    <p>But automation does not require Suaka to own anything. Three things stay separate throughout: the registrant details (who owns the domain), the registrar account (who controls it), and DNS automation (who edits records). DNS can be automated with Suaka holding neither ownership nor the customer's password.</p>
+  </section>
+
+  <section>
+    <h2>Three ownership models</h2>
+    <p class="muted">All three support automation of the full domain lifecycle under the stated grants. They differ in who owns and controls the domain.</p>
+
+    <h3>1. Customer's own account <span class="badge ok">Recommended</span></h3>
+    <p>The customer registers and owns the domain in their own Porkbun account. Suaka automates DNS with no password and no standing access, using one of two official flows:</p>
+    <ul class="plain">
+      <li><strong>DNS Connect:</strong> Suaka signs the record set as a JWT; the customer approves it on porkbun.com and can undo it within 30 days. Requires a one-time client registration with Porkbun review.</li>
+      <li><strong>DNS-scoped API key:</strong> the customer hands Suaka's app a key limited to DNS operations through Porkbun's PKCE key-handoff flow.</li>
+    </ul>
+
+    <h3>2. Suaka-owned, then handover</h3>
+    <p>Suaka registers the domain via the API, then pushes it free of charge into the customer's account ("Account Transfer" in the dashboard: pick the username, the customer accepts by email within 72 hours; brand-new accounts need ID verification first). Caveat: there is no public API endpoint for the account-to-account push itself, so the handover step stays manual.</p>
+    <div class="callout">
+      <p>Porkbun's Domain Name Registration Agreement expressly contemplates buying domains on a third party's behalf, with conditions: the customer must accept Porkbun's agreement, Suaka keeps evidence for 3 years, and Suaka must not present itself as a registrar.</p>
+    </div>
+
+    <h3>3. Suaka subaccounts</h3>
+    <p>Register in Suaka's parent account, then push the domain into a per-customer subaccount with its own login. Suaka retains ownership and transfer control. Subaccounts are an officially documented feature.</p>
+  </section>
+
+  <section>
+    <h2>The planned customer wizard</h2>
+    <p class="muted">For the recommended model. Only sign-up, payment, and approvals stay manual; Suaka automates the rest.</p>
+    <ol class="steps">
+      <li>Suaka sends the customer a one-time signup invite through the API (<code>POST /account/invite</code>, completion pollable).</li>
+      <li>The customer creates their account: username, password, a unique primary email, and their own contact details, which become the domain owner details (changeable per domain).</li>
+      <li>The customer verifies their email and phone (required before registering; verification can be completed via API with codes the customer reads out).</li>
+      <li>The customer adds payment or credit.</li>
+      <li>The customer searches for and registers their domain. WHOIS privacy is on automatically.</li>
+      <li>The customer approves Suaka's DNS Connect request, or grants a DNS-only API key.</li>
+    </ol>
+    <div class="callout">
+      <p><strong>Registration itself: two ways.</strong> The wizard above is the manual path: the customer buys the domain themselves and no granted authority is needed. The alternative: if the customer grants Suaka's app an API key with purchase scope and keeps the account verified and funded (credit, or a saved card with auto top-up), Suaka's system can register the domain inside the customer's account, so the customer owns it from the first second without doing the checkout. DNS automation is a separate, lighter grant either way.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Testing without real domains</h2>
+    <p>Porkbun offers a free sandbox (<code>pk1_sb_</code> keys, fake credit, the full API lifecycle, no real actions), including instant no-signup sandbox keys via <code>POST /apikey/request {"sandbox": true}</code>. Integration testing needs no real domains at all.</p>
+    <p>For real production-shape runs, the lowest-risk officially documented route is subaccounts under the main account.</p>
+    <div class="callout warn">
+      <p><strong>Multiple independent accounts: unconfirmed.</strong> No first-party terms text we found permits or prohibits one person running several independent Porkbun accounts, and none mention same-person testing. The signup page's email rules (unique primary, reusable backup) imply multiple accounts exist, and subaccounts are official, but that is not a settled policy answer. Anti-abuse and promo-abuse rules are a separate question from account count. Treat it as unconfirmed until Porkbun confirms it; sandbox and subaccounts cover testing without relying on it.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <p class="muted">All capability claims come from first-party porkbun.com pages fetched during the research (November 16, 2026).</p>
+    <ul class="plain">
+      <li><a href="https://porkbun.com/api/json/v3/documentation">Porkbun API documentation</a> - domain create, payments, spend caps, sandbox, invites, key scopes, verification</li>
+      <li><a href="https://porkbun.com/llms.txt">porkbun.com/llms.txt</a> and <a href="https://porkbun.com/llms-full.txt">llms-full.txt</a> - API capability reference</li>
+      <li><a href="https://porkbun.com/llms/guides/connect-a-service-to-porkbun-dns">Connect a service to Porkbun DNS</a> - DNS Connect and the PKCE key-handoff flow</li>
+      <li><a href="https://kb.porkbun.com/article/72-how-to-push-a-domain-into-another-account">How to push a domain into another account</a></li>
+      <li><a href="https://kb.porkbun.com/article/182-subaccounts-guide">Subaccounts guide</a> and <a href="https://kb.porkbun.com/article/242-subaccounts-vs-authorized-users">Subaccounts vs authorized users</a></li>
+      <li><a href="https://porkbun.com/legal/agreement/domain_name_registration_agreement">Domain Name Registration Agreement</a> - buying on a third party's behalf</li>
+      <li><a href="https://porkbun.com/legal/agreement/customer_service_abuse_policy">Customer service abuse policy</a> - checked for account-count rules (none found)</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Research only: no accounts, domains, or purchases were created, and Porkbun was not contacted. Capabilities and policies may change; check the sources for the current state.</p>
+    <p><a href="../">Back to Suaka</a> &middot; <a href="https://github.com/irvan-putra/suaka">github.com/irvan-putra/suaka</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
