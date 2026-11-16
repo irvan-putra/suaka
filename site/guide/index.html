@@ -37,10 +37,10 @@
     <p class="muted">All three support automation of the full domain lifecycle under the stated grants. They differ in who owns and controls the domain.</p>
 
     <h3>1. Customer's own account <span class="badge ok">Recommended</span></h3>
-    <p>The customer registers and owns the domain in their own Porkbun account. Suaka automates DNS with no password and no standing access, using one of two official flows:</p>
+    <p>The customer registers and owns the domain in their own Porkbun account. Suaka can manage DNS without handling the customer's password, using either of two official flows:</p>
     <ul class="plain">
-      <li><strong>DNS Connect:</strong> Suaka signs the record set as a JWT; the customer approves it on porkbun.com and can undo it within 30 days. Requires a one-time client registration with Porkbun review.</li>
-      <li><strong>DNS-scoped API key:</strong> the customer hands Suaka's app a key limited to DNS operations through Porkbun's PKCE key-handoff flow.</li>
+      <li><strong>DNS Connect:</strong> Suaka signs the record set as a JWT; the customer approves each request on porkbun.com and can undo applied changes within 30 days. It gives Suaka no standing access and requires a one-time client registration with Porkbun review.</li>
+      <li><strong>DNS-scoped API key:</strong> the customer hands Suaka's app a key limited to DNS operations through Porkbun's PKCE key-handoff flow. Unlike DNS Connect, this is ongoing, scoped access until the key is revoked.</li>
     </ul>
 
     <h3>2. Suaka-owned, then handover</h3>
@@ -55,7 +55,7 @@
 
   <section>
     <h2>The planned customer wizard</h2>
-    <p class="muted">For the recommended model. Only sign-up, payment, and approvals stay manual; Suaka automates the rest.</p>
+    <p class="muted">For the recommended customer-owned model's basic registration path, the customer handles signup, email and phone verification, payment, domain selection and registration, then approves DNS Connect or grants a DNS-only key. Suaka can automate the invitation and DNS setup. The alternative purchase-scoped registration flow is described below.</p>
     <ol class="steps">
       <li>Suaka sends the customer a one-time signup invite through the API (<code>POST /account/invite</code>, completion pollable).</li>
       <li>The customer creates their account: username, password, a unique primary email, and their own contact details, which become the domain owner details (changeable per domain).</li>
