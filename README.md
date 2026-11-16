@@ -22,3 +22,4 @@ This repository holds the planning README and the static website (in `site/`, de
 ## Research notes
 
 - [Porkbun API and DNS documentation](docs/research/porkbun-api-and-dns-docs.md) - a bounded reading of Porkbun’s public API, DNS Connect and account-transfer documentation; no account, API call, domain or DNS change was made.
+- [Porkbun list prices for common domain endings](docs/research/porkbun-tld-price-snapshot-2026-11-16.md) - a dated price snapshot; check current prices before buying.
