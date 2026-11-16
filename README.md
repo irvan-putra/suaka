@@ -18,3 +18,7 @@ The initial business idea is to let people purchase domain names through the Por
 ## Status
 
 This repository holds the planning README and the static website (in `site/`, deployed to GitHub Pages via Actions). No products, domain purchases, hosting services, or API integrations are implemented.
+
+## Research notes
+
+- [Porkbun API and DNS documentation](docs/research/porkbun-api-and-dns-docs.md) - a bounded reading of Porkbun’s public API, DNS Connect and account-transfer documentation; no account, API call, domain or DNS change was made.
